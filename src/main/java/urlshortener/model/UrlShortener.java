@@ -23,7 +23,7 @@ public class UrlShortener {
         this.id = id;
     }
 
-    public String getOriginalURL() {
+    public String getOriginalUrl() {
         return originalUrl;
     }
     public void setOriginUrl(String originalUrl) {this.originalUrl = originalUrl;}

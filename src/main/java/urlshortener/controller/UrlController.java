@@ -1,5 +1,6 @@
 package urlshortener.controller;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,18 +19,17 @@ public class UrlController {
     private final QrCodeService qrCodeService;
     private final String baseUrl;
 
-    public UrlController(UrlService urlService, QrCodeService qrCodeService) {
+    public UrlController(UrlService urlService, QrCodeService qrCodeService, @Value("${app.base-url}") String baseUrl) {
         this.urlService = urlService;
         this.qrCodeService = qrCodeService;
-
-        this.baseUrl = System.getenv("BASE_URL");
+        this.baseUrl = baseUrl;
 
         if (this.baseUrl == null || this.baseUrl.isBlank()) {
             throw new RuntimeException("BASE_URL environment variable not set");
         }
     }
 
-    @PostMapping("/shortener")
+    @PostMapping("/shortener/personalise")
     public ResponseEntity<ResponseDTO> createUrl(@RequestBody RequestDTO dto) {
         return ResponseEntity.ok(urlService.createUrl(dto));
     }
@@ -70,5 +70,10 @@ public class UrlController {
                 .header("Content-Type", "image/png")
                 .header("Content-Disposition", "attachment; filename=\"qrcode-" + urlName + ".png\"")
                 .body(qrCode);
+    }
+
+    @PostMapping("/shortener")
+    public ResponseEntity<ResponseDTO> randomUrl(@RequestBody RequestDTO dto){
+        return ResponseEntity.ok(urlService.randomUrl(dto));
     }
 }
