@@ -16,20 +16,29 @@ public class UrlController {
 
     private final UrlService urlService;
     private final QrCodeService qrCodeService;
+    private final String baseUrl;
 
-    public UrlController(UrlService urlService,QrCodeService qrCodeService){
+    public UrlController(UrlService urlService, QrCodeService qrCodeService) {
         this.urlService = urlService;
         this.qrCodeService = qrCodeService;
+
+        this.baseUrl = System.getenv("BASE_URL");
+
+        if (this.baseUrl == null || this.baseUrl.isBlank()) {
+            throw new RuntimeException("BASE_URL environment variable not set");
+        }
     }
 
     @PostMapping("/shortener")
-    public ResponseEntity<ResponseDTO> createUrl(@RequestBody RequestDTO dto){
+    public ResponseEntity<ResponseDTO> createUrl(@RequestBody RequestDTO dto) {
         return ResponseEntity.ok(urlService.createUrl(dto));
     }
 
     @GetMapping("/{urlName}")
-    public ResponseEntity<Void> callUrl(@PathVariable String urlName ){
+    public ResponseEntity<Void> callUrl(@PathVariable String urlName) {
+
         String originUrl = urlService.getOriginUrl(urlName);
+
         return ResponseEntity
                 .status(HttpStatus.FOUND)
                 .location(URI.create(originUrl))
@@ -38,12 +47,6 @@ public class UrlController {
 
     @GetMapping("/{urlName}/qrcode")
     public ResponseEntity<byte[]> qrCode(@PathVariable String urlName) throws Exception {
-
-        String baseUrl = System.getenv("BASE_URL");
-
-        if (baseUrl == null) {
-            throw new RuntimeException("BASE_URL environment variable not set");
-        }
 
         String shortUrl = baseUrl + "/" + urlName;
 
@@ -58,7 +61,7 @@ public class UrlController {
     @GetMapping("/{urlName}/qrcode/download")
     public ResponseEntity<byte[]> downloadQr(@PathVariable String urlName) throws Exception {
 
-        String shortUrl = "http://localhost:8080/" + urlName;
+        String shortUrl = baseUrl + "/" + urlName;
 
         byte[] qrCode = qrCodeService.generate(shortUrl);
 
