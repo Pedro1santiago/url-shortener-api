@@ -1,13 +1,12 @@
-package encurtaURL.EncurtaURL;
+package urlshortener;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class EncurtaUrlApplicationTests {
+class UrlShortenerApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
-
+    @Test
+    void contextLoads() {
+    }
 }
