@@ -1,17 +1,17 @@
-package pedrosantiago.model;
+package urlshortener.model;
 
 import jakarta.persistence.*;
 import jakarta.persistence.Id;
 
 @Entity
 @Table(name = "shortener")
-public class URLShortener {
+public class UrlShortener {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String originalURL;
+    private String originalUrl;
 
     @Column(unique = true)
     private String urlName;
@@ -24,9 +24,9 @@ public class URLShortener {
     }
 
     public String getOriginalURL() {
-        return originalURL;
+        return originalUrl;
     }
-    public void setOriginUrl(String originUrl) {this.originalURL = originalURL;}
+    public void setOriginUrl(String originalUrl) {this.originalUrl = originalUrl;}
 
     public String getUrlName() {
         return urlName;

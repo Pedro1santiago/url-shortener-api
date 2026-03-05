@@ -1,0 +1,5 @@
+CREATE TABLE shortener (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    original_url VARCHAR(2048) NOT NULL,
+    url_name VARCHAR(255) NOT NULL UNIQUE
+);
