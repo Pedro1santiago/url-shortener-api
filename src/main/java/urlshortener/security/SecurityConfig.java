@@ -38,6 +38,7 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/{code}/qr-code/download").permitAll()
                         .requestMatchers(HttpMethod.GET, "/{code}/stats").permitAll()
                         .requestMatchers(HttpMethod.GET, "/{code}/stats").permitAll()
+                        .requestMatchers("/actuator/health").permitAll()
                         .anyRequest().authenticated()
                 );
 
