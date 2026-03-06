@@ -1,5 +1,6 @@
 package urlshortener.service;
 
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import urlshortener.dto.CreateShortUrlRequest;
 import urlshortener.exception.CustomShortCodeBlankException;
@@ -10,7 +11,7 @@ import urlshortener.model.ShortUrl;
 import urlshortener.repository.ShortUrlRepository;
 import urlshortener.util.ShortCodeGenerator;
 
-import java.util.Optional;
+import java.net.URL;
 
 @Service
 public class ShortUrlService {
@@ -27,14 +28,17 @@ public class ShortUrlService {
             throw new InvalidUrlException();
         }
 
-        int httpSchemeIndex = url.indexOf("http://");
-        int httpsSchemeIndex = url.indexOf("https://");
-        int dotIndex = url.lastIndexOf(".");
+        try {
 
-        if ((httpSchemeIndex == -1 && httpsSchemeIndex == -1)
-                || dotIndex == -1
-                || dotIndex == url.length() - 1) {
+            URL parsed = new URL(url);
 
+            if (!parsed.getProtocol().equals("http") &&
+                    !parsed.getProtocol().equals("https")) {
+
+                throw new InvalidUrlException();
+            }
+
+        } catch (Exception e) {
             throw new InvalidUrlException();
         }
     }
@@ -44,7 +48,7 @@ public class ShortUrlService {
         String code;
 
         do {
-            code = ShortCodeGenerator.generateCode(5);
+            code = ShortCodeGenerator.generateCode(6);
         } while (shortUrlRepository.findByShortCode(code).isPresent());
 
         return code;
@@ -54,22 +58,21 @@ public class ShortUrlService {
 
         validateUrl(request.originalUrl());
 
-        Optional<ShortUrl> existing =
-                shortUrlRepository.findByOriginalUrl(request.originalUrl());
-
         ShortUrl entity = new ShortUrl();
+        entity.setOriginalUrl(request.originalUrl());
 
-        if (existing.isPresent()) {
-            entity.setOriginalUrl(existing.get().getOriginalUrl());
-        } else {
-            entity.setOriginalUrl(request.originalUrl());
+        while (true) {
+            try {
+
+                entity.setShortCode(generateUniqueCode());
+
+                ShortUrl saved = shortUrlRepository.save(entity);
+
+                return saved.getShortCode();
+
+            } catch (DataIntegrityViolationException e) {
+            }
         }
-
-        entity.setShortCode(generateUniqueCode());
-
-        ShortUrl saved = shortUrlRepository.save(entity);
-
-        return saved.getShortCode();
     }
 
     public String createCustomShortCode(CreateShortUrlRequest request) {
@@ -80,17 +83,24 @@ public class ShortUrlService {
 
         validateUrl(request.originalUrl());
 
-        if (shortUrlRepository.findByShortCode(request.customShortCode()).isPresent()) {
-            throw new ShortCodeAlreadyExistsException();
-        }
+        String code = request.customShortCode()
+                .trim()
+                .toLowerCase();
 
         ShortUrl entity = new ShortUrl();
         entity.setOriginalUrl(request.originalUrl());
-        entity.setShortCode(request.customShortCode());
+        entity.setShortCode(code);
 
-        ShortUrl saved = shortUrlRepository.save(entity);
+        try {
 
-        return saved.getShortCode();
+            ShortUrl saved = shortUrlRepository.save(entity);
+
+            return saved.getShortCode();
+
+        } catch (DataIntegrityViolationException e) {
+
+            throw new ShortCodeAlreadyExistsException();
+        }
     }
 
     public String getOriginalUrl(String shortCode) {

@@ -34,19 +34,38 @@ public class ShortUrlController {
     }
 
     @PostMapping("/short-urls/custom")
-    public ResponseEntity<CreateShortUrlResponse> createCustomShortUrl(@RequestBody CreateShortUrlRequest request) {
-        String shortCode = shortUrlService.createCustomShortCode(request);
-        return ResponseEntity.ok(new CreateShortUrlResponse(baseUrl + "/" + shortCode));
+    public ResponseEntity<CreateShortUrlResponse> createCustomShortUrl(
+            @RequestBody CreateShortUrlRequest request) {
+
+        String code = shortUrlService.createCustomShortCode(request);
+
+        return ResponseEntity.ok(
+                new CreateShortUrlResponse(
+                        baseUrl + "/" + code,
+                        code,
+                        request.originalUrl()
+                )
+        );
     }
 
     @PostMapping("/short-urls")
-    public ResponseEntity<CreateShortUrlResponse> createRandomShortUrl(@RequestBody CreateShortUrlRequest request) {
-        String shortCode = shortUrlService.createRandomShortCode(request);
-        return ResponseEntity.ok(new CreateShortUrlResponse(baseUrl + "/" + shortCode));
+    public ResponseEntity<CreateShortUrlResponse> createRandomShortUrl(
+            @RequestBody CreateShortUrlRequest request) {
+
+        String code = shortUrlService.createRandomShortCode(request);
+
+        return ResponseEntity.ok(
+                new CreateShortUrlResponse(
+                        baseUrl + "/" + code,
+                        code,
+                        request.originalUrl()
+                )
+        );
     }
 
     @GetMapping("/{code}")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable("code") String shortCode) {
+
         String originalUrl = shortUrlService.getOriginalUrl(shortCode);
 
         return ResponseEntity
