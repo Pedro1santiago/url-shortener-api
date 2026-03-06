@@ -7,6 +7,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -17,18 +18,26 @@ import java.util.List;
 @EnableWebSecurity
 public class SecurityConfig {
 
+    private final RateLimitFilter rateLimitFilter;
+
+    public SecurityConfig(RateLimitFilter rateLimitFilter) {
+        this.rateLimitFilter = rateLimitFilter;
+    }
+
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
         http
                 .cors(cors -> {})
                 .csrf(AbstractHttpConfigurer::disable)
+                .addFilterBefore(rateLimitFilter, UsernamePasswordAuthenticationFilter.class)
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.POST,"/short-urls/**").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/{code}/qr-code").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/{code}/qr-code/download").permitAll()
-                        .requestMatchers(HttpMethod.POST,"/{code}/qr-code").permitAll()
-                        .requestMatchers(HttpMethod.GET,"/{code}").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/short-urls/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/{code}").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/{code}/qr-code").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/{code}/qr-code/download").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/{code}/stats").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/{code}/stats").permitAll()
                         .anyRequest().authenticated()
                 );
 
@@ -63,7 +72,4 @@ public class SecurityConfig {
 
         return source;
     }
-
-
-
 }

@@ -17,9 +17,11 @@ import java.net.URL;
 public class ShortUrlService {
 
     private final ShortUrlRepository shortUrlRepository;
+    private final RedisService redisService;
 
-    public ShortUrlService(ShortUrlRepository shortUrlRepository) {
+    public ShortUrlService(ShortUrlRepository shortUrlRepository, RedisService redisService) {
         this.shortUrlRepository = shortUrlRepository;
+        this.redisService = redisService;
     }
 
     public void validateUrl(String url) {
@@ -105,10 +107,25 @@ public class ShortUrlService {
 
     public String getOriginalUrl(String shortCode) {
 
+        String cached = redisService.getCachedUrl(shortCode);
+
+        if (cached != null) {
+            redisService.incrementClicks(shortCode);
+            return cached;
+        }
+
         ShortUrl url = shortUrlRepository
                 .findByShortCode(shortCode)
                 .orElseThrow(ShortCodeNotFoundException::new);
 
+        redisService.cacheUrl(shortCode, url.getOriginalUrl());
+
+        redisService.incrementClicks(shortCode);
+
         return url.getOriginalUrl();
+    }
+
+    public Long getClicks(String code) {
+        return redisService.getClicks(code);
     }
 }
