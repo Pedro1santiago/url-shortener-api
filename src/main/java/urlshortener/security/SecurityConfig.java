@@ -41,7 +41,7 @@ public class SecurityConfig {
         CorsConfiguration config = new CorsConfiguration();
 
         config.setAllowedOrigins(List.of(
-                "https://shortliink.vercel.app"
+                "https://shortliiink.vercel.app"
         ));
 
         config.setAllowedMethods(List.of(
