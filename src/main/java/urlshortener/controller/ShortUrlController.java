@@ -100,4 +100,12 @@ public class ShortUrlController {
                 .header("Content-Disposition", "attachment; filename=\"qrcode-" + shortCode + ".png\"")
                 .body(qrCode);
     }
+
+//    @GetMapping("/{code}/stats")
+//    public ResponseEntity<Long> getClicks(@PathVariable String code) {
+//
+//        Long clicks = shortUrlService.getClicks(code);
+//
+//        return ResponseEntity.ok(clicks);
+//    }
 }
