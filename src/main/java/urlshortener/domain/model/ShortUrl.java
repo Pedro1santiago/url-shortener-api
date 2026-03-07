@@ -1,4 +1,4 @@
-package urlshortener.model;
+package urlshortener.domain.model;
 
 import jakarta.persistence.*;
 

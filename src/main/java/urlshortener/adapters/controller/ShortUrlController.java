@@ -1,4 +1,4 @@
-package urlshortener.controller;
+package urlshortener.adapters.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import urlshortener.dto.CreateShortUrlRequest;
 import urlshortener.dto.CreateShortUrlResponse;
-import urlshortener.service.QrCodeService;
-import urlshortener.service.ShortUrlService;
+import urlshortener.application.service.QrCodeService;
+import urlshortener.application.service.ShortUrlService;
 
 import java.net.URI;
 

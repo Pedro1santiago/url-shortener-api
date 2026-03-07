@@ -1,48 +1,29 @@
-package urlshortener.service;
+package urlshortener.application.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import urlshortener.dto.CreateShortUrlRequest;
 import urlshortener.exception.CustomShortCodeBlankException;
-import urlshortener.exception.InvalidUrlException;
 import urlshortener.exception.ShortCodeAlreadyExistsException;
 import urlshortener.exception.ShortCodeNotFoundException;
-import urlshortener.model.ShortUrl;
-import urlshortener.repository.ShortUrlRepository;
+import urlshortener.domain.model.ShortUrl;
+import urlshortener.domain.port.ShortUrlRepositoryPort;
+import urlshortener.util.Base62;
 import urlshortener.util.ShortCodeGenerator;
-
-import java.net.URL;
+import urlshortener.validation.Url;
 
 @Service
 public class ShortUrlService {
 
-    private final ShortUrlRepository shortUrlRepository;
+    private final ShortUrlRepositoryPort repository;
+    private final ShortCodeGenerator generator;
     private final RedisService redisService;
 
-    public ShortUrlService(ShortUrlRepository shortUrlRepository, RedisService redisService) {
-        this.shortUrlRepository = shortUrlRepository;
+
+    public ShortUrlService(ShortUrlRepositoryPort repository, ShortCodeGenerator generator, RedisService redisService) {
+        this.repository = repository;
+        this.generator = generator;
         this.redisService = redisService;
-    }
-
-    public void validateUrl(String url) {
-
-        if (url == null || url.isBlank()) {
-            throw new InvalidUrlException();
-        }
-
-        try {
-
-            URL parsed = new URL(url);
-
-            if (!parsed.getProtocol().equals("http") &&
-                    !parsed.getProtocol().equals("https")) {
-
-                throw new InvalidUrlException();
-            }
-
-        } catch (Exception e) {
-            throw new InvalidUrlException();
-        }
     }
 
     private String generateUniqueCode() {
@@ -50,31 +31,28 @@ public class ShortUrlService {
         String code;
 
         do {
-            code = ShortCodeGenerator.generateCode(6);
-        } while (shortUrlRepository.findByShortCode(code).isPresent());
+            code = generator.generateCode(6);
+        } while (repository.findByShortCode(code).isPresent());
 
         return code;
     }
 
     public String createRandomShortCode(CreateShortUrlRequest request) {
 
-        validateUrl(request.originalUrl());
+        Url.validate(request.originalUrl());
 
         ShortUrl entity = new ShortUrl();
         entity.setOriginalUrl(request.originalUrl());
 
-        while (true) {
-            try {
+        ShortUrl saved = repository.save(entity);
 
-                entity.setShortCode(generateUniqueCode());
+        String code = Base62.encode(saved.getId());
 
-                ShortUrl saved = shortUrlRepository.save(entity);
+        saved.setShortCode(code);
 
-                return saved.getShortCode();
+        repository.save(saved);
 
-            } catch (DataIntegrityViolationException e) {
-            }
-        }
+        return code;
     }
 
     public String createCustomShortCode(CreateShortUrlRequest request) {
@@ -83,7 +61,7 @@ public class ShortUrlService {
             throw new CustomShortCodeBlankException();
         }
 
-        validateUrl(request.originalUrl());
+        Url.validate(request.originalUrl());
 
         String code = request.customShortCode()
                 .trim()
@@ -95,7 +73,7 @@ public class ShortUrlService {
 
         try {
 
-            ShortUrl saved = shortUrlRepository.save(entity);
+            ShortUrl saved = repository.save(entity);
 
             return saved.getShortCode();
 
@@ -114,7 +92,7 @@ public class ShortUrlService {
             return cached;
         }
 
-        ShortUrl url = shortUrlRepository
+        ShortUrl url = repository
                 .findByShortCode(shortCode)
                 .orElseThrow(ShortCodeNotFoundException::new);
 

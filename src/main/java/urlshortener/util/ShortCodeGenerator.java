@@ -1,8 +1,11 @@
 package urlshortener.util;
 
+import org.springframework.stereotype.Component;
+
 import java.security.SecureRandom;
 
-public final class ShortCodeGenerator {
+@Component
+public class ShortCodeGenerator {
 
     private static final String BASE62 = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
@@ -10,7 +13,7 @@ public final class ShortCodeGenerator {
 
     private ShortCodeGenerator() {}
 
-    public static String generateCode(int length) {
+    public String generateCode(int length) {
 
         StringBuilder code = new StringBuilder(length);
 

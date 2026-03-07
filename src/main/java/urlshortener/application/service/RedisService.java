@@ -1,4 +1,4 @@
-package urlshortener.service;
+package urlshortener.application.service;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
