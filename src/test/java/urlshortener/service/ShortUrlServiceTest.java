@@ -9,6 +9,7 @@ import urlshortener.application.service.ShortUrlService;
 import urlshortener.dto.CreateShortUrlRequest;
 import urlshortener.domain.model.ShortUrl;
 import urlshortener.domain.port.ShortUrlRepositoryPort;
+import urlshortener.validation.Url;
 
 import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -25,12 +26,13 @@ public class ShortUrlServiceTest {
     @InjectMocks
     private ShortUrlService shortUrlService;
 
+
     @Test
     void shouldValidateUrlSuccessfully() {
 
         String url = "https://youtube.com";
 
-        assertDoesNotThrow(() -> shortUrlService.validateUrl(url));
+        assertDoesNotThrow(() -> Url.validate(url));
     }
 
     @Test
