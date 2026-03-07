@@ -8,51 +8,48 @@ import urlshortener.exception.ShortCodeAlreadyExistsException;
 import urlshortener.exception.ShortCodeNotFoundException;
 import urlshortener.domain.model.ShortUrl;
 import urlshortener.domain.port.ShortUrlRepositoryPort;
-import urlshortener.util.Base62;
 import urlshortener.util.ShortCodeGenerator;
 import urlshortener.validation.Url;
 
 @Service
 public class ShortUrlService {
 
+    private static final int SHORT_CODE_LENGTH = 5;
+
     private final ShortUrlRepositoryPort repository;
     private final ShortCodeGenerator generator;
     private final RedisService redisService;
 
+    public ShortUrlService(
+            ShortUrlRepositoryPort repository,
+            ShortCodeGenerator generator,
+            RedisService redisService) {
 
-    public ShortUrlService(ShortUrlRepositoryPort repository, ShortCodeGenerator generator, RedisService redisService) {
         this.repository = repository;
         this.generator = generator;
         this.redisService = redisService;
-    }
-
-    private String generateUniqueCode() {
-
-        String code;
-
-        do {
-            code = generator.generateCode(6);
-        } while (repository.findByShortCode(code).isPresent());
-
-        return code;
     }
 
     public String createRandomShortCode(CreateShortUrlRequest request) {
 
         Url.validate(request.originalUrl());
 
-        ShortUrl entity = new ShortUrl();
-        entity.setOriginalUrl(request.originalUrl());
+        while (true) {
 
-        ShortUrl saved = repository.save(entity);
+            String code = generator.generateCode(SHORT_CODE_LENGTH);
 
-        String code = Base62.encode(saved.getId());
+            ShortUrl entity = new ShortUrl();
+            entity.setOriginalUrl(request.originalUrl());
+            entity.setShortCode(code);
 
-        saved.setShortCode(code);
+            try {
 
-        repository.save(saved);
+                ShortUrl saved = repository.save(entity);
+                return saved.getShortCode();
 
-        return code;
+            } catch (DataIntegrityViolationException ignored) {
+            }
+        }
     }
 
     public String createCustomShortCode(CreateShortUrlRequest request) {
@@ -74,7 +71,6 @@ public class ShortUrlService {
         try {
 
             ShortUrl saved = repository.save(entity);
-
             return saved.getShortCode();
 
         } catch (DataIntegrityViolationException e) {
