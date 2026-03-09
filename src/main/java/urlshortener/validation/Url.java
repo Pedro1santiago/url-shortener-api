@@ -12,12 +12,16 @@ public class Url {
             throw new InvalidUrlException();
         }
 
+        if (!url.startsWith("http://") && !url.startsWith("https://")){
+            throw new InvalidUrlException();
+        }
+
         try {
 
             URL parsed = new URL(url);
 
-            if (!parsed.getProtocol().equals("http://") &&
-                    !parsed.getProtocol().equals("https://")) {
+            if (!parsed.getProtocol().equals("http") &&
+                    !parsed.getProtocol().equals("https")) {
 
                 throw new InvalidUrlException();
             }
