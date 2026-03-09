@@ -16,8 +16,8 @@ public class Url {
 
             URL parsed = new URL(url);
 
-            if (!parsed.getProtocol().equals("http") &&
-                    !parsed.getProtocol().equals("https")) {
+            if (!parsed.getProtocol().equals("http://") &&
+                    !parsed.getProtocol().equals("https://")) {
 
                 throw new InvalidUrlException();
             }
