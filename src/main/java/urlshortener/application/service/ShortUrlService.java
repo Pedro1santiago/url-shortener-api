@@ -2,13 +2,14 @@ package urlshortener.application.service;
 
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import urlshortener.dto.CreateShortUrlRequest;
 import urlshortener.exception.CustomShortCodeBlankException;
 import urlshortener.exception.ShortCodeAlreadyExistsException;
 import urlshortener.exception.ShortCodeNotFoundException;
 import urlshortener.domain.model.ShortUrl;
 import urlshortener.domain.port.ShortUrlRepositoryPort;
-import urlshortener.util.ShortCodeGenerator;
+import urlshortener.infrastructure.util.ShortCodeGenerator;
 import urlshortener.validation.Url;
 
 @Service
@@ -30,6 +31,7 @@ public class ShortUrlService {
         this.redisService = redisService;
     }
 
+    @Transactional
     public String createRandomShortCode(CreateShortUrlRequest request) {
 
         Url.validate(request.originalUrl());
@@ -52,6 +54,7 @@ public class ShortUrlService {
         }
     }
 
+    @Transactional
     public String createCustomShortCode(CreateShortUrlRequest request) {
 
         if (request.customShortCode() == null || request.customShortCode().isBlank()) {
@@ -79,6 +82,7 @@ public class ShortUrlService {
         }
     }
 
+    @Transactional(readOnly = true )
     public String getOriginalUrl(String shortCode) {
 
         String cached = redisService.getCachedUrl(shortCode);
@@ -99,6 +103,7 @@ public class ShortUrlService {
         return url.getOriginalUrl();
     }
 
+    @Transactional(readOnly = true )
     public Long getClicks(String code) {
         return redisService.getClicks(code);
     }

@@ -1,4 +1,4 @@
-package urlshortener.adapters.controller;
+package urlshortener.adapters.in.controller;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,19 +33,24 @@ public class ShortUrlController {
         }
     }
 
+    private CreateShortUrlResponse buildResponse(String code, String originalUrl) {
+        return new CreateShortUrlResponse(
+                baseUrl + "/" + code,
+                code,
+                originalUrl
+        );
+    }
+
     @PostMapping("/short-urls/custom")
-    public ResponseEntity<CreateShortUrlResponse> createCustomShortUrl(
-            @RequestBody CreateShortUrlRequest request) {
+    public ResponseEntity<CreateShortUrlResponse> createCustomShortUrl(@RequestBody CreateShortUrlRequest request) {
 
         String code = shortUrlService.createCustomShortCode(request);
 
-        return ResponseEntity.ok(
-                new CreateShortUrlResponse(
-                        baseUrl + "/" + code,
-                        code,
-                        request.originalUrl()
-                )
-        );
+        CreateShortUrlResponse response = buildResponse(code, request.originalUrl());
+
+        return ResponseEntity
+                .created(URI.create(baseUrl + "/" + code))
+                .body(response);
     }
 
     @PostMapping("/short-urls")
@@ -54,13 +59,11 @@ public class ShortUrlController {
 
         String code = shortUrlService.createRandomShortCode(request);
 
-        return ResponseEntity.ok(
-                new CreateShortUrlResponse(
-                        baseUrl + "/" + code,
-                        code,
-                        request.originalUrl()
-                )
-        );
+        CreateShortUrlResponse response = buildResponse(code, request.originalUrl());
+
+        return ResponseEntity
+                .created(URI.create(baseUrl + "/" + code))
+                .body(response);
     }
 
     @GetMapping("/{code}")

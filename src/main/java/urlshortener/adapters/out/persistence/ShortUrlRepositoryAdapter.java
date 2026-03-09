@@ -1,4 +1,4 @@
-package urlshortener.adapters.persistence;
+package urlshortener.adapters.out.persistence;
 
 import org.springframework.stereotype.Component;
 import urlshortener.domain.model.ShortUrl;

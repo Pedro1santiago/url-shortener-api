@@ -1,4 +1,4 @@
-package urlshortener.security;
+package urlshortener.infrastructure.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
