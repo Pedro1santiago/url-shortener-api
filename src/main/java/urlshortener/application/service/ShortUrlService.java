@@ -65,7 +65,8 @@ public class ShortUrlService {
 
         String code = request.customShortCode()
                 .trim()
-                .toLowerCase();
+                .toLowerCase()
+                .replace(" ", "");
 
         ShortUrl entity = new ShortUrl();
         entity.setOriginalUrl(request.originalUrl());
