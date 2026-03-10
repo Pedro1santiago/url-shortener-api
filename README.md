@@ -147,11 +147,23 @@ A aplicação lê as configurações via variáveis de ambiente (recomendado par
 
 ## Rodando localmente
 
+### Perfil local (recomendado)
+
+Este repositório **não versiona** `application-local.properties` para evitar vazamento de credenciais.
+
+1. Copie o arquivo de exemplo:
+
+```bash
+cp src/main/resources/application-local.properties.example src/main/resources/application-local.properties
+```
+
+2. Exporte as variáveis de ambiente (`DB_URL_JDBC`, `DB_USER`, `DB_PASSWORD`, `REDIS_URL`, `BASE_URL`) e rode com o profile `local`.
+
 ### 1) Maven (dev)
 
 ```bash
 ./mvnw test
-./mvnw spring-boot:run
+./mvnw spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
 A API sobe por padrão em `http://localhost:8080`.

@@ -1,0 +1,22 @@
+spring.application.name=UrlShortener
+
+# Local profile example configuration (DO NOT commit real secrets).
+# Copy this file to application-local.properties and override via env vars.
+
+spring.datasource.url=${DB_URL_JDBC:jdbc:postgresql://localhost:5432/urlshortener}
+spring.datasource.username=${DB_USER:postgres}
+spring.datasource.password=${DB_PASSWORD:postgres}
+spring.datasource.driver-class-name=org.postgresql.Driver
+
+spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
+spring.jpa.hibernate.ddl-auto=update
+
+app.base-url=${BASE_URL:http://localhost:8080}
+
+spring.data.redis.url=${REDIS_URL:redis://localhost:6379}
+
+spring.flyway.enabled=true
+spring.jpa.open-in-view=false
+
+management.endpoints.web.exposure.include=health
+management.endpoint.health.show-details=never
