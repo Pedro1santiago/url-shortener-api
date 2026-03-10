@@ -13,6 +13,7 @@ public class ShortCodeGenerator {
 
     private ShortCodeGenerator() {}
 
+    /** Generates a random Base62 short code with the given length. */
     public String generateCode(int length) {
 
         StringBuilder code = new StringBuilder(length);

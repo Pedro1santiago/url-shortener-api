@@ -33,6 +33,7 @@ public class ShortUrlController {
         }
     }
 
+    /** Builds the API response payload for a newly created short URL. */
     private CreateShortUrlResponse buildResponse(String code, String originalUrl) {
         return new CreateShortUrlResponse(
                 baseUrl + "/" + code,
@@ -41,6 +42,7 @@ public class ShortUrlController {
         );
     }
 
+    /** Creates a short URL using a custom code provided by the client. */
     @PostMapping("/short-urls/custom")
     public ResponseEntity<CreateShortUrlResponse> createCustomShortUrl(@RequestBody CreateShortUrlRequest request) {
 
@@ -53,6 +55,7 @@ public class ShortUrlController {
                 .body(response);
     }
 
+    /** Creates a short URL using a randomly generated code. */
     @PostMapping("/short-urls")
     public ResponseEntity<CreateShortUrlResponse> createRandomShortUrl(
             @RequestBody CreateShortUrlRequest request) {
@@ -66,6 +69,7 @@ public class ShortUrlController {
                 .body(response);
     }
 
+    /** Redirects to the original URL for the given short code. */
     @GetMapping("/{code}")
     public ResponseEntity<Void> redirectToOriginalUrl(@PathVariable("code") String shortCode) {
 
@@ -77,6 +81,7 @@ public class ShortUrlController {
                 .build();
     }
 
+    /** Returns a PNG QR code image for the short URL. */
     @GetMapping("/{code}/qr-code")
     public ResponseEntity<byte[]> qrCode(@PathVariable("code") String shortCode) throws Exception {
 
@@ -90,6 +95,7 @@ public class ShortUrlController {
                 .body(qrCode);
     }
 
+    /** Returns a PNG QR code image as an attachment download. */
     @GetMapping("/{code}/qr-code/download")
     public ResponseEntity<byte[]> downloadQrCode(@PathVariable("code") String shortCode) throws Exception {
 

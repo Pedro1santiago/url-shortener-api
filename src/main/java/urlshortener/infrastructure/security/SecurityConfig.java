@@ -24,6 +24,7 @@ public class SecurityConfig {
         this.rateLimitFilter = rateLimitFilter;
     }
 
+        /** Configures Spring Security, public endpoints, and the rate-limit filter. */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
@@ -46,6 +47,7 @@ public class SecurityConfig {
         return http.build();
     }
 
+        /** Configures CORS to allow the hosted front-end origin. */
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
 

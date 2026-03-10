@@ -20,6 +20,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         this.redisService = redisService;
     }
 
+    /** Enforces a per-IP rate limit and returns HTTP 429 when exceeded. */
     @Override
     protected void doFilterInternal(
             @NonNull HttpServletRequest request,
@@ -42,6 +43,7 @@ public class RateLimitFilter extends OncePerRequestFilter {
         filterChain.doFilter(request, response);
     }
 
+    /** Extracts the client IP using X-Forwarded-For when available. */
     private String getClientIp(HttpServletRequest request) {
 
         String header = request.getHeader("X-Forwarded-For");

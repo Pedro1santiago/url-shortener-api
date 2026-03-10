@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class UrlShortenerApplication {
 
+	/** Application entrypoint. */
 	public static void main(String[] args) {
 
         SpringApplication.run(UrlShortenerApplication.class, args);

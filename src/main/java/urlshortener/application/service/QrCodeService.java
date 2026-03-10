@@ -11,6 +11,7 @@ import java.io.ByteArrayOutputStream;
 @Service
 public class QrCodeService {
 
+    /** Generates a PNG QR code image for the given URL. */
     public byte[] generate(String url) throws Exception {
 
         QRCodeWriter writer = new QRCodeWriter();

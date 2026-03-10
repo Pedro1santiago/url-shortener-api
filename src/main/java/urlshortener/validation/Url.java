@@ -6,6 +6,7 @@ import java.net.URL;
 
 public class Url {
 
+    /** Validates that the URL is non-blank and uses http/https. */
     public static void validate(String url) {
 
         if (url == null || url.isBlank()) {

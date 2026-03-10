@@ -15,11 +15,13 @@ public class ShortUrlRepositoryAdapter implements ShortUrlRepositoryPort {
         this.repository = repository;
     }
 
+    /** Delegates persistence to the Spring Data JPA repository. */
     @Override
     public ShortUrl save(ShortUrl shortUrl) {
         return repository.save(shortUrl);
     }
 
+    /** Delegates lookup to the Spring Data JPA repository. */
     @Override
     public Optional<ShortUrl> findByShortCode(String code) {
         return repository.findByShortCode(code);

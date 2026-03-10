@@ -31,6 +31,7 @@ public class ShortUrlService {
         this.redisService = redisService;
     }
 
+    /** Creates a new short URL using a random code and persists it. */
     @Transactional
     public String createRandomShortCode(CreateShortUrlRequest request) {
 
@@ -54,6 +55,7 @@ public class ShortUrlService {
         }
     }
 
+    /** Creates a new short URL using a client-provided custom code. */
     @Transactional
     public String createCustomShortCode(CreateShortUrlRequest request) {
 
@@ -83,6 +85,7 @@ public class ShortUrlService {
         }
     }
 
+    /** Resolves a short code to its original URL (with Redis cache + click counting). */
     @Transactional(readOnly = true )
     public String getOriginalUrl(String shortCode) {
 
@@ -104,6 +107,7 @@ public class ShortUrlService {
         return url.getOriginalUrl();
     }
 
+    /** Returns the click counter for a short code from Redis. */
     @Transactional(readOnly = true )
     public Long getClicks(String code) {
         return redisService.getClicks(code);
